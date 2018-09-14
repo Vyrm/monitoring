@@ -32,14 +32,14 @@ public class ResourceStatusService {
         if (resourceResponse.getResponseTime() >= resourceRequest.getResponseTimeWarning() &&
                 resourceResponse.getResponseTime() < resourceRequest.getResponseTimeCritical()) {
             Map<Status, String> map = new EnumMap<>(Status.class);
-            map.put(Status.WARNING, "ResourceRequest response time above warning line, response time: "
+            map.put(Status.WARNING, "MonitoringRequest response time above warning line, response time: "
                     + resourceResponse.getResponseTime() + " ms");
             list.add(map);
             warning = true;
         }
         if (resourceResponse.getResponseTime() > resourceRequest.getResponseTimeCritical()) {
             Map<Status, String> map = new EnumMap<>(Status.class);
-            map.put(Status.CRITICAL, "ResourceRequest response time above critical line, response time: "
+            map.put(Status.CRITICAL, "MonitoringRequest response time above critical line, response time: "
                     + resourceResponse.getResponseTime() + " ms");
             list.add(map);
             critical = true;
@@ -49,7 +49,7 @@ public class ResourceStatusService {
         if (resourceResponse.getResponseSize() < resourceRequest.getExpectedMinResponseSize() &&
                 resourceResponse.getResponseSize() > resourceRequest.getExpectedMaxResponseSize()) {
             Map<Status, String> map = new EnumMap<>(Status.class);
-            map.put(Status.CRITICAL, "ResourceRequest response time above critical line, response time: "
+            map.put(Status.CRITICAL, "MonitoringRequest response time above critical line, response time: "
                     + resourceResponse.getResponseSize() + " byte");
             list.add(map);
             critical = true;
@@ -58,7 +58,7 @@ public class ResourceStatusService {
         //response substring
         if (resourceResponse.getExpectedSubstringAvailability() != null && !resourceResponse.getExpectedSubstringAvailability()) {
             Map<Status, String> map = new EnumMap<>(Status.class);
-            map.put(Status.CRITICAL, "ResourceRequest response does not contains expected substring: "
+            map.put(Status.CRITICAL, "MonitoringRequest response does not contains expected substring: "
                     + resourceRequest.getExpectedSubstring());
             list.add(map);
             critical = true;

@@ -9,12 +9,12 @@ import java.util.List;
 
 @Slf4j
 @RestController("/resource")
-public class ResourceRequest {
+public class MonitoringRequest {
     private final MonitorExecutor monitorExecutor;
     private final ResourceRepository resourceRepository;
 
     @Autowired
-    public ResourceRequest(MonitorExecutor monitorExecutor, ResourceRepository resourceRepository) {
+    public MonitoringRequest(MonitorExecutor monitorExecutor, ResourceRepository resourceRepository) {
         this.monitorExecutor = monitorExecutor;
         this.resourceRepository = resourceRepository;
     }
@@ -31,8 +31,13 @@ public class ResourceRequest {
         monitorExecutor.removeMonitor(resourceRequest.getUrl());
     }
 
-    @GetMapping(value = "/resource/get")
-    public List getResource(){
+    @GetMapping
+    public List getAllResource(){
         return resourceRepository.findAll();
+    }
+
+    @GetMapping(value = "/resource/{user}")
+    public List getResourceByUser(@PathVariable String user){
+        return resourceRepository.findByUser(user);
     }
 }

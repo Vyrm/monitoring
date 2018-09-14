@@ -9,8 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 
 @SpringBootApplication
 @Slf4j
@@ -26,11 +24,6 @@ public class MonitorApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        List list = resourceRepository.findAll();
-        for (Object o : list) {
-            System.out.println(list.size());
-            System.out.println(o);
-        }
     }
 
 }

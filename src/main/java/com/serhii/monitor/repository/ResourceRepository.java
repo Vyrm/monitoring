@@ -10,5 +10,7 @@ import java.util.List;
 public interface ResourceRepository extends MongoRepository<ResourceResponse, String> {
     List<ResourceResponse> findByUrl(String url);
 
+    List<ResourceResponse> findByUser(String user);
+
     ResourceResponse removeResourceByUrlAndUser(String url, String user);
 }
