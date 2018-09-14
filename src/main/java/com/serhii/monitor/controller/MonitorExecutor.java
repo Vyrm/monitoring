@@ -1,6 +1,6 @@
 package com.serhii.monitor.controller;
 
-import com.serhii.monitor.dao.Resource;
+import com.serhii.monitor.dao.ResourceRequest;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Component;
 
@@ -16,9 +16,9 @@ public class MonitorExecutor {
         this.executorService = executorService;
     }
 
-    public void executeMonitor(Resource resource) {
+    public void executeMonitor(ResourceRequest resourceRequest) {
         resourceMonitor = getResourceMonitor();
-        resourceMonitor.setResource(resource);
+        resourceMonitor.setResourceRequest(resourceRequest);
         executorService.submit(resourceMonitor);
     }
 

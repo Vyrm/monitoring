@@ -1,6 +1,7 @@
 package com.serhii.monitor.service;
 
-import com.serhii.monitor.dao.Resource;
+import com.serhii.monitor.dao.ResourceRequest;
+import com.serhii.monitor.dao.ResourceResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -17,15 +18,19 @@ import java.net.URISyntaxException;
 @Slf4j
 public class ResourceAnalyzingService {
     private final RestTemplate restTemplate;
+    private ResourceResponse resourceResponse;
 
     @Autowired
     public ResourceAnalyzingService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-    public Resource analyze(Resource resource) throws URISyntaxException {
+    public ResourceResponse analyze(ResourceRequest resourceRequest) throws URISyntaxException {
+        resourceResponse = new ResourceResponse();
+        resourceResponse.setUrl(resourceRequest.getUrl());
+        resourceResponse.setUser(resourceRequest.getUser());
         long start = System.currentTimeMillis();
-        ResponseEntity httpEntity = makeRequest(resource);
+        ResponseEntity httpEntity = makeRequest(resourceRequest);
         long end = System.currentTimeMillis();
         long responseTime = calculateResponseTime(start, end);
         log.info("Response time: {} ms", responseTime);
@@ -33,23 +38,23 @@ public class ResourceAnalyzingService {
         log.info("Response code: {}", responseCode);
         int responseSize = getResponseSize(httpEntity);
         log.info("Response size: {} byte", responseSize);
-        if (resource.getExpectedSubstring() != null && resource.getExpectedSubstring().isEmpty()) {
-            boolean expectedSubstringAvailability = getSubstring(httpEntity, resource.getExpectedSubstring());
+        if (resourceRequest.getExpectedSubstring() != null && !resourceRequest.getExpectedSubstring().isEmpty()) {
+            boolean expectedSubstringAvailability = getSubstring(httpEntity, resourceRequest.getExpectedSubstring());
             log.info("Substring availability: {}", expectedSubstringAvailability);
-            resource.setExpectedSubstringAvailability(expectedSubstringAvailability);
+            resourceResponse.setExpectedSubstringAvailability(expectedSubstringAvailability);
         }
 
-        resource.setResponseSize(responseSize);
-        resource.setResponseCode(responseCode);
-        resource.setResponseTime(responseTime);
+        resourceResponse.setResponseSize(responseSize);
+        resourceResponse.setResponseCode(responseCode);
+        resourceResponse.setResponseTime(responseTime);
 
-        return resource;
+        return resourceResponse;
     }
 
-    private ResponseEntity makeRequest(Resource resource) throws URISyntaxException, RestClientException {
+    private ResponseEntity makeRequest(ResourceRequest resourceRequest) throws URISyntaxException, RestClientException {
         System.setProperty("https.proxyHost", "wsproxy.alfa.bank.int");
         System.setProperty("https.proxyPort", "3128");
-        RequestEntity request = new RequestEntity(HttpMethod.GET, new URI(resource.getUrl()));
+        RequestEntity request = new RequestEntity(HttpMethod.GET, new URI(resourceRequest.getUrl()));
         ResponseEntity<String> response = restTemplate.exchange(request, String.class);
         return response;
     }

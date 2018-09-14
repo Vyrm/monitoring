@@ -1,6 +1,5 @@
 package com.serhii.monitor.controller;
 
-import com.serhii.monitor.dao.Resource;
 import com.serhii.monitor.repository.ResourceRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +20,15 @@ public class ResourceRequest {
     }
 
     @PostMapping
-    public void setResource(@RequestBody Resource resource) {
-        log.info("URL: " + resource.getUrl());
-        monitorExecutor.executeMonitor(resource);
+    public void setResource(@RequestBody com.serhii.monitor.dao.ResourceRequest resourceRequest) {
+        log.info("URL: " + resourceRequest.getUrl());
+        monitorExecutor.executeMonitor(resourceRequest);
     }
 
     @DeleteMapping
-    public void removeResource(@RequestBody Resource resource) {
-        log.info("URL for remove: " + resource.getUrl());
-        monitorExecutor.removeMonitor(resource.getUrl());
+    public void removeResource(@RequestBody com.serhii.monitor.dao.ResourceRequest resourceRequest) {
+        log.info("URL for remove: " + resourceRequest.getUrl());
+        monitorExecutor.removeMonitor(resourceRequest.getUrl());
     }
 
     @GetMapping(value = "/resource/get")

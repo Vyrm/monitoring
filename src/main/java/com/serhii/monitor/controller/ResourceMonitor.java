@@ -1,6 +1,7 @@
 package com.serhii.monitor.controller;
 
-import com.serhii.monitor.dao.Resource;
+import com.serhii.monitor.dao.ResourceRequest;
+import com.serhii.monitor.dao.ResourceResponse;
 import com.serhii.monitor.dao.Status;
 import com.serhii.monitor.repository.ResourceRepository;
 import com.serhii.monitor.service.ResourceAnalyzingService;
@@ -12,10 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE;
 
@@ -26,7 +23,8 @@ public class ResourceMonitor implements Runnable {
     private final ResourceAnalyzingService resourceAnalyzingService;
     private final ResourceStatusService resourceStatusService;
     private final ResourceRepository resourceRepository;
-    private Resource resource;
+    private ResourceRequest resourceRequest;
+    private ResourceResponse resourceResponse;
 
     @Autowired
     public ResourceMonitor(ResourceAnalyzingService resourceAnalyzingService,
@@ -39,25 +37,25 @@ public class ResourceMonitor implements Runnable {
 
     @Override
     public void run() {
-        Thread.currentThread().setName(resource.getUrl());
+        Thread.currentThread().setName(resourceRequest.getUrl());
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                resource = resourceAnalyzingService.analyze(resource);
+                resourceResponse = resourceAnalyzingService.analyze(resourceRequest);
             } catch (URISyntaxException e) {
                 log.error("Invalid URL");
                 Thread.currentThread().interrupt();
                 break;
             } catch (RestClientException e) {
                 log.error("Timeout");
-                resource.setStatus(Status.CRITICAL);
+                resourceResponse.setStatus(Status.CRITICAL);
                 Thread.currentThread().interrupt();
                 break;
             }
-            resource = resourceStatusService.checkStatus(resource);
-            System.out.println(resource);
-            resourceRepository.insert(resource);
+            resourceResponse = resourceStatusService.checkStatus(resourceRequest, resourceResponse);
+            System.out.println(resourceResponse);
+            resourceRepository.insert(resourceResponse);
             try {
-                Thread.sleep(resource.getMonitoringPeriod());
+                Thread.sleep(resourceRequest.getMonitoringPeriod());
             } catch (InterruptedException e) {
                 log.info("Stopping thread: {}", Thread.currentThread().getName());
                 Thread.currentThread().interrupt();
@@ -65,7 +63,7 @@ public class ResourceMonitor implements Runnable {
         }
     }
 
-    public void setResource(Resource resource) {
-        this.resource = resource;
+    public void setResourceRequest(ResourceRequest resourceRequest) {
+        this.resourceRequest = resourceRequest;
     }
 }
