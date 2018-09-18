@@ -1,5 +1,7 @@
 package com.serhii.monitor.config;
 
+import com.serhii.monitor.properties.ApplicationProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +12,12 @@ import java.util.concurrent.Executors;
 
 @Configuration
 public class AppConfig {
+    private final ApplicationProperties applicationProperties;
+
+    @Autowired
+    public AppConfig(ApplicationProperties applicationProperties) {
+        this.applicationProperties = applicationProperties;
+    }
 
     @Bean
     public ExecutorService executorService() {
@@ -18,7 +26,8 @@ public class AppConfig {
 
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
-        return restTemplateBuilder.setReadTimeout(20000).setConnectTimeout(20000).build();
+        return restTemplateBuilder.setReadTimeout(applicationProperties.getTimeout().getRead())
+                .setConnectTimeout(applicationProperties.getTimeout().getConnection()).build();
     }
 
 }

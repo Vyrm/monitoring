@@ -25,5 +25,4 @@ public class MonitorApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
     }
-
 }

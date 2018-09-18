@@ -1,0 +1,7 @@
+logging:
+  level:
+    root: info
+application:
+  timeout:
+    read: 20000
+    connection: 20000

@@ -8,9 +8,9 @@ import java.util.List;
 
 @Repository
 public interface ResourceRepository extends MongoRepository<ResourceResponse, String> {
-    List<ResourceResponse> findByUrl(String url);
+    List<ResourceResponse> findByUrlAndUser(String url, String user);
 
     List<ResourceResponse> findByUser(String user);
 
-    ResourceResponse removeResourceByUrlAndUser(String url, String user);
+    List<ResourceResponse> deleteAllByUrlAndUser(String url, String user);
 }

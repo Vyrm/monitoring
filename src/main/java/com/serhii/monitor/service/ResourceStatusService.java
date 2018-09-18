@@ -78,4 +78,14 @@ public class ResourceStatusService {
         }
         return resourceResponse;
     }
+
+    public ResourceResponse setStatus(ResourceResponse resourceResponse, String message){
+        List<Map<Status, String>> list = new ArrayList<>();
+        Map<Status, String> map = new EnumMap<>(Status.class);
+        map.put(Status.CRITICAL, message);
+        list.add(map);
+        resourceResponse.setStatus(Status.CRITICAL);
+        resourceResponse.setStatusDescription(list);
+        return resourceResponse;
+    }
 }

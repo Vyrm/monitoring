@@ -1,9 +1,11 @@
 package com.serhii.monitor.dao;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.URL;
 
 @Data
 public class ResourceRequest {
+
     private String url;
     private int monitoringPeriod; // ms
     private int expectedResponseCode;
@@ -14,6 +16,4 @@ public class ResourceRequest {
     private int responseTimeWarning;
     private int responseTimeCritical;
     private String user;
-
-
 }

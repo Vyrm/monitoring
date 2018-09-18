@@ -8,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,7 +26,7 @@ public class ResourceAnalyzingService {
         this.restTemplate = restTemplate;
     }
 
-    public ResourceResponse analyze(ResourceRequest resourceRequest) throws URISyntaxException {
+    public ResourceResponse analyze(ResourceRequest resourceRequest) throws ResourceAccessException{
         resourceResponse = new ResourceResponse();
         resourceResponse.setUrl(resourceRequest.getUrl());
         resourceResponse.setUser(resourceRequest.getUser());
@@ -51,10 +52,15 @@ public class ResourceAnalyzingService {
         return resourceResponse;
     }
 
-    private ResponseEntity makeRequest(ResourceRequest resourceRequest) throws URISyntaxException, RestClientException {
+    private ResponseEntity makeRequest(ResourceRequest resourceRequest) throws ResourceAccessException {
         System.setProperty("https.proxyHost", "wsproxy.alfa.bank.int");
         System.setProperty("https.proxyPort", "3128");
-        RequestEntity request = new RequestEntity(HttpMethod.GET, new URI(resourceRequest.getUrl()));
+        RequestEntity request = null;
+        try {
+            request = new RequestEntity(HttpMethod.GET, new URI(resourceRequest.getUrl()));
+        } catch (URISyntaxException e) {
+            log.error("Invalid URL");
+        }
         ResponseEntity<String> response = restTemplate.exchange(request, String.class);
         return response;
     }
